@@ -4,5 +4,5 @@ project(clox C)
 set(CMAKE_C_STANDARD 23)
 
 
-add_executable(clox src/main.c include/common.h)
+add_executable(clox src/main.c include/common.h include/chunk.h src/chunk.c include/memory.h src/memory.c include/debug.h src/debug.c include/value.h src/value.c)
 target_include_directories(clox PRIVATE include)
