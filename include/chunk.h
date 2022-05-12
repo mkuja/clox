@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "value.h"
+#include "meta.h"
 
 typedef enum {
     OP_CONSTANT,
@@ -17,8 +18,8 @@ typedef struct {
     int count;
     int capacity;
     uint8_t* code;
-    int* lines;
     ValueArray constants;
+    LinesRle lines;
 } Chunk;
 
 void initChunk(Chunk* chunk);
