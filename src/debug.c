@@ -6,6 +6,7 @@
 
 #include "chunk.h"
 #include "debug.h"
+#include "uint24_t.h"
 
 static int simpleInstruction(const char* name, int offset) {
     printf("%s\n", name);
@@ -18,6 +19,18 @@ static int constantInstruction(const char* name, int offset, Chunk* chunk) {
     printValue(chunk->constants.values[constant]);
     printf("\n");
     return offset + 2;
+}
+
+static int constantLongInstruction(const char* name, int offset, Chunk* chunk) {
+    uint24_t constant;
+    constant.a = chunk->code[offset+1];
+    constant.b = chunk->code[offset+2];
+    constant.c = chunk->code[offset+3];
+    uint32_t constant_as_uint = convertBack(constant);
+    printf("%-16s %4d '", name, constant_as_uint);
+    printValue(chunk->constants.values[constant_as_uint]);
+    printf("\n");
+    return offset + 4;
 }
 
 void disassembleChunk(Chunk* chunk, const char* name) {
@@ -41,9 +54,10 @@ int disassembleInstruction(Chunk* chunk, int offset) {
     switch (instruction) {
         case OP_RETURN:
             return simpleInstruction("OP_RETURN", offset);
-            break;
         case OP_CONSTANT:
             return constantInstruction("OP_CONSTANT", offset, chunk);
+        case OP_CONSTANT_LONG:
+            return constantLongInstruction("OP_CONSTANT_LONG", offset, chunk);
         default:
             printf("Unknown opcode %d\n", instruction);
             return offset + 1;

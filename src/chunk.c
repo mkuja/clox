@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "chunk.h"
 #include "memory.h"
+#include "uint24_t.h"
 
 void initChunk(Chunk* chunk) {
     chunk->count = 0;
@@ -40,4 +41,19 @@ void freeChunk(Chunk* chunk) {
 int addConstant(Chunk* chunk, Value value) {
     writeValueArray(&chunk->constants, value);
     return chunk->constants.count - 1;
+}
+
+void writeConstant(Chunk* chunk, Value value, int line) {
+    uint32_t nthConstant = addConstant(chunk, value);
+    if (nthConstant < 256) {
+        writeChunk(chunk, OP_CONSTANT, line);
+        writeChunk(chunk, (char) nthConstant, line);
+    }
+    else {
+        uint24_t constOrdinal = convertTo(nthConstant);
+        writeChunk(chunk, OP_CONSTANT_LONG, line);
+        writeChunk(chunk, constOrdinal.a, line);
+        writeChunk(chunk, constOrdinal.b, line);
+        writeChunk(chunk, constOrdinal.c, line);
+    }
 }
