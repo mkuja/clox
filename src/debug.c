@@ -17,7 +17,7 @@ static int constantInstruction(const char* name, int offset, Chunk* chunk) {
     uint8_t constant = chunk->code[offset+1];
     printf("%-16s %4d '", name, constant);
     printValue(chunk->constants.values[constant]);
-    printf("\n");
+    printf("'\n");
     return offset + 2;
 }
 
@@ -27,7 +27,7 @@ static int constantLongInstruction(const char* name, int offset, Chunk* chunk) {
     constant.b = chunk->code[offset+2];
     constant.c = chunk->code[offset+3];
     uint32_t constant_as_uint = convertBack(constant);
-    printf("%-16s %4d '", name, constant_as_uint);
+    printf("%-16s %4d ", name, constant_as_uint);
     printValue(chunk->constants.values[constant_as_uint]);
     printf("\n");
     return offset + 4;
