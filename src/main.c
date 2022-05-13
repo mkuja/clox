@@ -11,8 +11,24 @@ int main(int argc, char *argv[]) {
     initChunk(&chunk);
     initVM();
 
-    writeConstant(&chunk, 5.0, 1);
-    writeChunk(&chunk, OP_RETURN, 2);
+//    writeConstant(&chunk, 3.0, 1);
+//    writeConstant(&chunk, 2.0, 1);
+//    writeChunk(&chunk, OP_MULTIPLY, 1);
+//    writeConstant(&chunk, 1.0, 1);
+//    writeChunk(&chunk, OP_ADD, 1);
+//    writeConstant(&chunk, 4.0, 1);
+//    writeChunk(&chunk, OP_SUBTRACT, 1);
+//    writeConstant(&chunk, 5.0, 1);
+//    writeChunk(&chunk, OP_NEGATE, 1);
+//    writeChunk(&chunk, OP_DIVIDE, 1);
+//    writeChunk(&chunk, OP_RETURN, 1);
+
+    writeConstant(&chunk, 2.0, 1);
+    writeConstant(&chunk, 3.0, 1);
+    writeConstant(&chunk, 1.0, 1);
+    writeChunk(&chunk, OP_SUBTRACT, 1);
+    writeChunk(&chunk, OP_SUBTRACT, 1);
+    writeChunk(&chunk, OP_RETURN, 1);
 
     interpret(&chunk);
     freeChunk(&chunk);
