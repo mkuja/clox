@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include "debug.h"
 #include "common.h"
+#include "memory.h"
 #include "vm.h"
 
 VM vm;
@@ -22,7 +23,7 @@ do {                  \
     for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
         printf("          ");
-        for (Value *slot = vm.stack; slot < vm.stackTop; slot++) {
+        for (Value *slot = vm.stack.data; slot < vm.stack.stackTop; slot++) {
             printf("[ ");
             printValue(*slot);
             printf(" ]");
@@ -40,13 +41,21 @@ do {                  \
                 Value constant = READ_CONSTANT();
                 push(constant);
                 break;
-            case OP_NEGATE:
-                push(-pop());
+                case OP_NEGATE:
+                    push(-pop());
                 break;
-            case OP_ADD:        BINARY_OP(+); break;
-            case OP_SUBTRACT:   BINARY_OP(-); break;
-            case OP_MULTIPLY:   BINARY_OP(*); break;
-            case OP_DIVIDE:     BINARY_OP(/); break;
+                case OP_ADD:
+                    BINARY_OP(+);
+                break;
+                case OP_SUBTRACT:
+                    BINARY_OP(-);
+                break;
+                case OP_MULTIPLY:
+                    BINARY_OP(*);
+                break;
+                case OP_DIVIDE:
+                    BINARY_OP(/);
+                break;
             }
 
         }
@@ -58,14 +67,34 @@ do {                  \
 }
 
 static void resetStack() {
-    vm.stackTop = vm.stack;
+    vm.stack.stackTop = vm.stack.data;
+}
+
+static void initStack() {
+    int capacity = STACK_INITIAL;
+    vm.stack.data = GROW_ARRAY(Value, vm.stack.data, 0, capacity);
+}
+
+static void resizeStack() {
+    if (vm.stack.stackTop >= vm.stack.data + vm.stack.capacity) {
+        int oldCapacity = vm.stack.capacity;
+        int newCapacity = GROW_CAPACITY(oldCapacity);
+        vm.stack.data = GROW_ARRAY(Value, vm.stack.data, oldCapacity, newCapacity);
+    }
+}
+
+static void freeStack() {
+    int stackCapacity = vm.stack.capacity;
+    FREE_ARRAY(Value, vm.stack.data, stackCapacity);
 }
 
 void initVM() {
+    initStack();
     resetStack();
 }
 
 void freeVM() {
+    freeStack();
 }
 
 InterpretResult interpret(Chunk *chunk) {
@@ -75,11 +104,12 @@ InterpretResult interpret(Chunk *chunk) {
 }
 
 void push(Value value) {
-    *vm.stackTop = value;
-    vm.stackTop++;
+    resizeStack();
+    *vm.stack.stackTop = value;
+    vm.stack.stackTop++;
 }
 
 Value pop() {
-    vm.stackTop--;
-    return *vm.stackTop;
+    vm.stack.stackTop--;
+    return *vm.stack.stackTop;
 }
