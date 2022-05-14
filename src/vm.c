@@ -6,6 +6,7 @@
 #include "debug.h"
 #include "common.h"
 #include "memory.h"
+#include "compiler.h"
 #include "vm.h"
 
 VM vm;
@@ -97,10 +98,9 @@ void freeVM() {
     freeStack();
 }
 
-InterpretResult interpret(Chunk *chunk) {
-    vm.chunk = chunk;
-    vm.ip = vm.chunk->code;
-    return run();
+InterpretResult interpret(const char* source) {
+    compile(source);
+    return INTERPRET_OK;
 }
 
 void push(Value value) {

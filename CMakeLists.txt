@@ -12,5 +12,5 @@ add_executable(clox
         include/value.h src/value.c
         include/meta.h src/meta.c
         include/uint24_t.h src/uint24_t.c
-        include/vm.h src/vm.c)
+        include/vm.h src/vm.c src/compiler.c include/compiler.h src/scanner.c include/scanner.h)
 target_include_directories(clox PRIVATE include)
